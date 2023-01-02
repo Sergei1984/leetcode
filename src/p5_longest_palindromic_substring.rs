@@ -1,9 +1,7 @@
-use std::collections::{BinaryHeap, HashMap, VecDeque};
+use std::collections::BinaryHeap;
 
 #[allow(dead_code)]
 pub struct Solution;
-
-#[allow(dead_code)]
 impl Solution {
     pub fn longest_palindrome(s: String) -> String {
         if s.len() == 0 {
@@ -14,27 +12,23 @@ impl Solution {
             return s;
         }
 
-        let mut symbols = HashMap::<char, VecDeque<usize>>::new();
+        let b = s.as_bytes();
 
-        for (i, s) in s.chars().enumerate() {
-            let entry = symbols.get_mut(&s);
-            if let Some(deq) = entry {
-                deq.push_back(i);
+        if b.len() == 2 {
+            if b[0] == b[1] {
+                return s;
             } else {
-                let mut value = VecDeque::<usize>::new();
-                value.push_back(i);
-                symbols.insert(s, value);
+                return s[0..1].to_string();
             }
         }
 
         let mut indexes_heap = BinaryHeap::new();
-        for (_, idx) in symbols.iter() {
-            for i in 0..idx.len() - 1 {
-                for y in i + 1..idx.len() {
-                    let pair = IndexPair {
-                        min: *idx.get(i).unwrap(),
-                        max: *idx.get(y).unwrap(),
-                    };
+
+        for i in 0..b.len() - 1 {
+            for k in i + 1..b.len() {
+                if b[i] == b[k] {
+                    let pair = IndexPair { min: i, max: k };
+
                     indexes_heap.push(pair);
                 }
             }
@@ -53,7 +47,7 @@ impl Solution {
             }
         }
 
-        "".to_string()
+        s[0..1].to_string()
     }
 
     #[inline]
@@ -68,7 +62,7 @@ impl Solution {
     }
 }
 
-#[derive(Eq, PartialEq)]
+#[derive(Eq, PartialEq, Debug)]
 struct IndexPair {
     pub min: usize,
     pub max: usize,
@@ -76,21 +70,14 @@ struct IndexPair {
 
 impl PartialOrd for IndexPair {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        let my_distance = self.max - self.min;
-        let other_distance = self.max - self.min;
-
-        if my_distance != other_distance {
-            return Some(my_distance.cmp(&other_distance));
-        }
-
-        return Some(self.min.cmp(&other.min));
+        Some(self.cmp(other))
     }
 }
 
 impl Ord for IndexPair {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         let my_distance = self.max - self.min;
-        let other_distance = self.max - self.min;
+        let other_distance = other.max - other.min;
 
         if my_distance != other_distance {
             return my_distance.cmp(&other_distance);
@@ -99,7 +86,6 @@ impl Ord for IndexPair {
         return self.min.cmp(&other.min);
     }
 }
-
 #[cfg(test)]
 mod test {
     use super::Solution;
@@ -161,6 +147,22 @@ mod test {
         assert_eq!(
             Solution::longest_palindrome("abccsv".to_string()),
             "cc".to_string()
+        );
+    }
+
+    #[test]
+    fn case10() {
+        assert_eq!(
+            Solution::longest_palindrome("ac".to_string()),
+            "a".to_string()
+        );
+    }
+
+    #[test]
+    fn case11() {
+        assert_eq!(
+            Solution::longest_palindrome("aacabdkacaa".to_string()),
+            "aca".to_string()
         );
     }
 }
