@@ -32,7 +32,7 @@ impl Solution {
 }
 
 #[cfg(test)]
-mod p13_test {
+mod test {
     use super::Solution;
 
     #[test]
