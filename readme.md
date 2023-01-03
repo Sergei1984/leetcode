@@ -37,4 +37,12 @@ Then start checking from widest to narrows and return first found palindrome.
 Solution is unexpectedly slow, not sure why.
 Probably it should be better to just scan the string and
 try expanding compare symbols left and right around certain symbol
-(but need to think how to handle palindromes of both types `aa` and `aba`).
+(but need to handle palindromes of both types `aa` and `aba`).
+
+## Problem 2. Add two numbers (Medium)
+
+Add two numbers represented as linked list of digits.
+
+Pretty easy algorithmically but hard to operate with linked lists in Rust.
+Solved via recursive algorithm but not sure if it would be such easy to
+implement such algorithm using loops.

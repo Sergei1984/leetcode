@@ -1,6 +1,7 @@
+#![allow(unused)]
+
 use std::collections::BinaryHeap;
 
-#[allow(dead_code)]
 pub struct Solution;
 impl Solution {
     pub fn longest_palindrome(s: String) -> String {
@@ -51,6 +52,7 @@ impl Solution {
     }
 
     #[inline]
+    #[allow(dead_code)]
     pub fn is_palindrome(s: &str) -> bool {
         let b = s.as_bytes();
         for i in 0..b.len() / 2 {
