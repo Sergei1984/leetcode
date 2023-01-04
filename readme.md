@@ -46,3 +46,10 @@ Add two numbers represented as linked list of digits.
 Pretty easy algorithmically but hard to operate with linked lists in Rust.
 Solved via recursive algorithm but not sure if it would be such easy to
 implement such algorithm using loops.
+
+## Problem 8. String to integer (Medium)
+
+Convert string containing some garbage characters to integer
+
+Pretty easy but need to implement a lot of conditions.
+The most complex part is to determine overflowing but easy to do in Rust.

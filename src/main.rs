@@ -4,6 +4,7 @@ mod p1_two_sum;
 mod p2_add_two_numbers;
 mod p3_longes_unique_substring;
 mod p5_longest_palindromic_substring;
+mod p8_string_to_integer;
 
 fn main() {
     println!("Hello, world!");
