@@ -1,3 +1,4 @@
+mod p10_regular_expression_matching;
 mod p13_roman_to_integer;
 mod p14_longest_common_prefix;
 mod p1_two_sum;
