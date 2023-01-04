@@ -14,7 +14,7 @@ impl Solution {
 
     fn match_recursive(s: &str, p: &str) -> bool {
         if s.len() == 0 {
-            return true;
+            return p.len() == 0;
         }
 
         let mut p_iter = p.chars();
@@ -29,14 +29,28 @@ impl Solution {
                     match_multiple = true;
                     next_p = &p[2..];
 
-                    stop_char = p_iter.next();
+                    // to handle multiple zero pattern cases like
+                    // a*x*y*z*a we need to use second a as stop char
+                    loop {
+                        stop_char = p_iter.next();
+                        if let Some(sc) = stop_char {
+                            if sc != match_char {
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
+
+                        next_p = &next_p[1..];
+
+                        break;
+                    }
                 }
             }
 
             let mut idx = 0;
             for c in s.chars() {
                 let c_matching = match_char == '.' || c == match_char;
-                let is_stop_char = stop_char.map(|sc| sc == '.' || sc == c).unwrap_or(false);
 
                 if !match_multiple {
                     // match single char
@@ -47,8 +61,15 @@ impl Solution {
                     }
                 }
 
-                if is_stop_char {
-                    return Self::match_recursive(&s[idx..], next_p);
+                // if current pattern is match-all (.) we test stop char
+                // else just wait for the end of the matching
+
+                if match_char == '.' {
+                    if let Some(stop_char_value) = stop_char {
+                        if c == stop_char_value {
+                            return Self::match_recursive(&s[idx..], next_p);
+                        }
+                    }
                 }
 
                 if !c_matching {
@@ -137,7 +158,7 @@ mod test {
     fn case11_match_regex_start() {
         assert_eq!(
             Solution::is_match("abc".to_string(), "abcd".to_string()),
-            true
+            false
         );
     }
     #[test]
@@ -152,5 +173,47 @@ mod test {
     fn case13_non_greedy() {
         let result = Solution::is_match("ab".to_string(), ".*c".to_string());
         assert_eq!(result, false);
+    }
+
+    #[test]
+    fn case14_regex_longer() {
+        let result = Solution::is_match("aaa".to_string(), "aaaa".to_string());
+        assert_eq!(result, false);
+    }
+
+    #[test]
+    fn case15_stop_char_same_as_pattern() {
+        let result = Solution::is_match("aaa".to_string(), "a*a".to_string());
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn case16_zero_patterns() {
+        let result = Solution::is_match("aaa".to_string(), "ab*a*c*a".to_string());
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn case17_zero_pattern_at_start() {
+        let result = Solution::is_match("aab".to_string(), "c*a*b".to_string());
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn case18_multiple_zero_patterns() {
+        let result = Solution::is_match("aaa".to_string(), "ab*a*c*d*e*f*a".to_string());
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn case19_simplest_zero_pattern() {
+        let result = Solution::is_match("aa".to_string(), "a*a".to_string());
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn case20_simplest_zero_pattern_interaction() {
+        let result = Solution::is_match("aa".to_string(), "a*b*a".to_string());
+        assert_eq!(result, true);
     }
 }
