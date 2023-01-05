@@ -53,3 +53,17 @@ Convert string containing some garbage characters to integer
 
 Pretty easy but need to implement a lot of conditions.
 The most complex part is to determine overflowing but easy to do in Rust.
+
+## Problem 10. Regular expression matching (Hard)
+
+Fucking hard really. A lot of conditions and cases needs to be encounted.
+Most of time I spent to realize how algorithm must behave in different situations.
+
+Main stuck: cases like `.*a`. For input `abcaa` it's not possible to determine end of wildcard without testing all variants.
+
+Solution could be slightly optimized by preventing all-variants check in some cases.
+For example
+
+- for patterns like `a*b` we could omit checking at all
+- for patterns like `a*aaa` where `a` occurred `n` times at the end we could replace all-variants checking with
+  checking that `a` occurred at least `n` times.

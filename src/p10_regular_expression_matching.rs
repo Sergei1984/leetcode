@@ -4,6 +4,8 @@ pub struct Solution;
 
 #[allow(dead_code)]
 impl Solution {
+    // Main trick: if we have multiple match pattern `a*` we should try to finish it each matching step
+    // Otherwise we never know how end of pattern would match
     pub fn is_match(s: String, p: String) -> bool {
         if p == ".*" {
             return true;
@@ -13,78 +15,73 @@ impl Solution {
     }
 
     fn match_recursive(s: &str, p: &str) -> bool {
-        if s.len() == 0 {
-            return p.len() == 0;
-        }
-
-        let mut p_iter = p.chars();
-
-        if let Some(match_char) = p_iter.next() {
-            let mut next_p = &p[1..];
-            let mut match_multiple = false;
-            let mut stop_char = None;
-
-            if let Some(next) = p_iter.next() {
-                if next == '*' {
-                    match_multiple = true;
-                    next_p = &p[2..];
-
-                    // to handle multiple zero pattern cases like
-                    // a*x*y*z*a we need to use second a as stop char
-                    loop {
-                        stop_char = p_iter.next();
-                        if let Some(sc) = stop_char {
-                            if sc != match_char {
-                                break;
-                            }
-                        } else {
-                            break;
-                        }
-
-                        next_p = &next_p[1..];
-
-                        break;
-                    }
-                }
+        let curr_p = Self::next_pattern(p);
+        if let Some(pattern) = curr_p {
+            if s.len() == 0 && !pattern.allow_multiple {
+                return false;
             }
 
             let mut idx = 0;
             for c in s.chars() {
-                let c_matching = match_char == '.' || c == match_char;
-
-                if !match_multiple {
-                    // match single char
-                    if c_matching {
-                        return Self::match_recursive(&s[1..], next_p);
+                // The simplest case
+                if !pattern.allow_multiple {
+                    if pattern.match_char == c || pattern.match_char == '.' {
+                        return Self::match_recursive(&s[idx + 1..], pattern.next_regex);
                     } else {
                         return false;
                     }
                 }
 
-                // if current pattern is match-all (.) we test stop char
-                // else just wait for the end of the matching
-
-                if match_char == '.' {
-                    if let Some(stop_char_value) = stop_char {
-                        if c == stop_char_value {
-                            return Self::match_recursive(&s[idx..], next_p);
-                        }
-                    }
+                // Handle zero or any pattern
+                let match_current = pattern.match_char == c || pattern.match_char == '.';
+                if !match_current {
+                    return Self::match_recursive(&s[idx..], pattern.next_regex);
                 }
 
-                if !c_matching {
-                    return Self::match_recursive(&s[idx..], next_p);
+                if pattern.next_regex.len() > 0 {
+                    let next_fully_match = Self::match_recursive(&s[idx..], pattern.next_regex);
+                    if next_fully_match {
+                        return true;
+                    }
                 }
 
                 idx = idx + 1;
             }
 
-            return next_p.len() == 0; // end of string means we successfully matched all characters
+            return Self::match_recursive(&s[idx..], pattern.next_regex);
         } else {
-            // end of pattern
             return s.len() == 0;
         }
     }
+
+    fn next_pattern<'a>(regex: &'a str) -> Option<Pattern<'a>> {
+        let mut next_index = 1;
+        let mut chars = regex.chars();
+
+        let next_char = chars.next();
+        if next_char.is_none() {
+            return None;
+        }
+
+        let match_char = next_char.unwrap();
+
+        let allow_multiple = chars.next().unwrap_or_default() == '*';
+        if allow_multiple {
+            next_index = next_index + 1;
+        }
+
+        Some(Pattern {
+            match_char,
+            allow_multiple,
+            next_regex: &regex[next_index..],
+        })
+    }
+}
+
+pub struct Pattern<'a> {
+    pub match_char: char,
+    pub allow_multiple: bool,
+    pub next_regex: &'a str,
 }
 
 #[cfg(test)]
@@ -92,22 +89,22 @@ mod test {
     use super::Solution;
 
     #[test]
-    fn case1() {
+    fn case001() {
         assert_eq!(Solution::is_match("aa".to_string(), "a".to_string()), false);
     }
 
     #[test]
-    fn case2() {
+    fn case002() {
         assert_eq!(Solution::is_match("aa".to_string(), "a*".to_string()), true);
     }
 
     #[test]
-    fn case3() {
+    fn case003() {
         assert_eq!(Solution::is_match("ab".to_string(), ".*".to_string()), true);
     }
 
     #[test]
-    fn case4() {
+    fn case004() {
         assert_eq!(
             Solution::is_match("abc".to_string(), "abc".to_string()),
             true
@@ -115,7 +112,7 @@ mod test {
     }
 
     #[test]
-    fn case5() {
+    fn case005() {
         assert_eq!(
             Solution::is_match("abc".to_string(), "...".to_string()),
             true
@@ -123,7 +120,7 @@ mod test {
     }
 
     #[test]
-    fn case6() {
+    fn case006() {
         assert_eq!(
             Solution::is_match("abc1111111d".to_string(), "a.c.*d".to_string()),
             true
@@ -131,7 +128,7 @@ mod test {
     }
 
     #[test]
-    fn case8() {
+    fn case008() {
         assert_eq!(
             Solution::is_match("abcd".to_string(), "...".to_string()),
             false
@@ -139,7 +136,7 @@ mod test {
     }
 
     #[test]
-    fn case9() {
+    fn case009() {
         assert_eq!(
             Solution::is_match("aaaad".to_string(), "a*d".to_string()),
             true
@@ -147,7 +144,7 @@ mod test {
     }
 
     #[test]
-    fn case10() {
+    fn case010() {
         assert_eq!(
             Solution::is_match("aa".to_string(), "a.*a".to_string()),
             true
@@ -155,14 +152,14 @@ mod test {
     }
 
     #[test]
-    fn case11_match_regex_start() {
+    fn case011_match_regex_start() {
         assert_eq!(
             Solution::is_match("abc".to_string(), "abcd".to_string()),
             false
         );
     }
     #[test]
-    fn case12() {
+    fn case012() {
         assert_eq!(
             Solution::is_match("mississippi".to_string(), "mis*is*ip*.".to_string()),
             true
@@ -170,50 +167,62 @@ mod test {
     }
 
     #[test]
-    fn case13_non_greedy() {
+    fn case013_non_greedy() {
         let result = Solution::is_match("ab".to_string(), ".*c".to_string());
         assert_eq!(result, false);
     }
 
     #[test]
-    fn case14_regex_longer() {
+    fn case014_regex_longer() {
         let result = Solution::is_match("aaa".to_string(), "aaaa".to_string());
         assert_eq!(result, false);
     }
 
     #[test]
-    fn case15_stop_char_same_as_pattern() {
+    fn case015_stop_char_same_as_pattern() {
         let result = Solution::is_match("aaa".to_string(), "a*a".to_string());
         assert_eq!(result, true);
     }
 
     #[test]
-    fn case16_zero_patterns() {
+    fn case016_zero_patterns() {
         let result = Solution::is_match("aaa".to_string(), "ab*a*c*a".to_string());
         assert_eq!(result, true);
     }
 
     #[test]
-    fn case17_zero_pattern_at_start() {
+    fn case017_zero_pattern_at_start() {
         let result = Solution::is_match("aab".to_string(), "c*a*b".to_string());
         assert_eq!(result, true);
     }
 
     #[test]
-    fn case18_multiple_zero_patterns() {
+    fn case018_multiple_zero_patterns() {
         let result = Solution::is_match("aaa".to_string(), "ab*a*c*d*e*f*a".to_string());
         assert_eq!(result, true);
     }
 
     #[test]
-    fn case19_simplest_zero_pattern() {
+    fn case019_simplest_zero_pattern() {
         let result = Solution::is_match("aa".to_string(), "a*a".to_string());
         assert_eq!(result, true);
     }
 
     #[test]
-    fn case20_simplest_zero_pattern_interaction() {
+    fn case020_simplest_zero_pattern_interaction() {
         let result = Solution::is_match("aa".to_string(), "a*b*a".to_string());
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn case021_fucked_up_lookup() {
+        let result = Solution::is_match("aaacacaab".to_string(), ".*ab".to_string());
+        assert_eq!(result, true);
+    }
+
+    #[test]
+    fn case022_zero_or_more_at_the_end() {
+        let result = Solution::is_match("a".to_string(), "ab*".to_string());
         assert_eq!(result, true);
     }
 }
