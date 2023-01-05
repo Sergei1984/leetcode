@@ -89,7 +89,7 @@ impl ListNode {
 #[cfg(test)]
 mod test {
     use super::Solution;
-    use crate::p2_add_two_numbers::ListNode;
+    use crate::p002_easy_add_two_numbers::ListNode;
 
     #[test]
     fn case1() {
