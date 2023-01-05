@@ -67,3 +67,13 @@ For example
 - for patterns like `a*b` we could omit checking at all
 - for patterns like `a*aaa` where `a` occurred `n` times at the end we could replace all-variants checking with
   checking that `a` occurred at least `n` times.
+
+## Problem 7. Reverse integer (Medium)
+
+Done without converting source int to string.
+Most challenging was to determine last digit of number for numbers near max and min integer,
+because method used (taking reminder and subtracting previous reminder) requires multiplier
+equal to i32.MAX \* 10 (which wouldn't work and causes overflow).
+
+Work around that by checking actual overflow and testing number with if,
+because there are two possible first digits (1 or 2) for near end numbers.
