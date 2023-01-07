@@ -2,7 +2,6 @@
 
 pub struct Solution;
 
-#[allow(dead_code)]
 impl Solution {
     // Main trick: if we have multiple match pattern `a*` we should try to finish it each matching step
     // Otherwise we never know how end of pattern would match
