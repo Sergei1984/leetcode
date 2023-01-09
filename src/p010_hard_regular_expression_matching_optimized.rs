@@ -5,11 +5,229 @@ impl Solution {
     pub fn is_match(s: String, p: String) -> bool {
         false
     }
+
+    pub fn parse_regex<'a>(regex: &'a [u8]) -> Option<Box<PatternPair<'a>>> {
+        if regex.len() == 0 {
+            return None;
+        }
+
+        let (repeatable_part, next) = Self::capture_repeatable(regex);
+        let (fixed_part, rest) = Self::capture_fixed(next);
+
+        Some(Box::new(PatternPair {
+            fixed: fixed_part,
+            repeatable: repeatable_part,
+            next_pattern: Self::parse_regex(rest),
+        }))
+    }
+
+    // Captures fixed part of regex (first tuple member) and returns rest of slice (second tuple member)
+    pub fn capture_fixed<'a>(regex: &'a [u8]) -> (Option<&'a [u8]>, &'a [u8]) {
+        if regex.len() == 0 {
+            return (None, regex);
+        }
+
+        if let Some(asterisk_index) = regex.iter().position(|s| *s == b'*') {
+            if asterisk_index < 2 {
+                return (None, regex); // No fixed part
+            } else {
+                return (
+                    Some(&regex[0..asterisk_index - 1]),
+                    &regex[asterisk_index - 1..],
+                );
+            }
+        } else {
+            return (Some(regex), &regex[regex.len()..]); // No repeatable part
+        }
+    }
+
+    // Captures repeatable part of regex (first tuple member) and returns rest of slice (second tuple member)
+    pub fn capture_repeatable<'a>(regex: &'a [u8]) -> (Option<&'a [u8]>, &'a [u8]) {
+        if regex.len() == 0 {
+            return (None, regex);
+        }
+        for i in 0..regex.len() {
+            if regex[i] == b'*' {
+                continue;
+            }
+
+            let next = regex.get(i + 1);
+            if let Some(next_char) = next {
+                if *next_char != b'*' {
+                    if i < 2 {
+                        return (None, regex); // No repeatable part
+                    } else {
+                        return (Some(&regex[0..i]), &regex[i..]);
+                    }
+                }
+            }
+        }
+
+        return (Some(&regex), &regex[regex.len()..]);
+    }
+}
+
+#[derive(Debug)]
+pub struct PatternPair<'a> {
+    pub fixed: Option<&'a [u8]>,
+    pub repeatable: Option<&'a [u8]>,
+
+    pub next_pattern: Option<Box<PatternPair<'a>>>,
 }
 
 #[cfg(test)]
 mod test {
     use super::Solution;
+
+    #[test]
+    fn capture_fixed_1() {
+        let (pattern, rest) = Solution::capture_fixed("abc*d*efg*h*jk".as_bytes());
+
+        assert_eq!(
+            "ab".to_string(),
+            pattern
+                .map(|b| String::from_utf8(b.to_vec()).unwrap())
+                .unwrap_or_default()
+        );
+
+        assert_eq!(
+            "c*d*efg*h*jk".to_string(),
+            String::from_utf8(rest.to_vec()).unwrap()
+        );
+    }
+
+    #[test]
+    fn capture_fixed_2() {
+        let (pattern, rest) = Solution::capture_fixed("c*d*efg*h*jk".as_bytes());
+
+        assert_eq!(None, pattern);
+
+        assert_eq!(
+            "c*d*efg*h*jk".to_string(),
+            String::from_utf8(rest.to_vec()).unwrap()
+        );
+    }
+
+    #[test]
+    fn capture_fixed_3() {
+        let (pattern, rest) = Solution::capture_fixed("cjk".as_bytes());
+
+        assert_eq!(
+            "cjk".to_string(),
+            pattern
+                .map(|b| String::from_utf8(b.to_vec()).unwrap())
+                .unwrap_or_default()
+        );
+
+        assert_eq!(0, rest.len());
+    }
+
+    #[test]
+    fn capture_repeatable_1() {
+        let (pattern, rest) = Solution::capture_repeatable("c*d*efg*h*jk".as_bytes());
+
+        assert_eq!(
+            "c*d*".to_string(),
+            pattern
+                .map(|b| String::from_utf8(b.to_vec()).unwrap())
+                .unwrap_or_default()
+        );
+
+        assert_eq!(
+            "efg*h*jk".to_string(),
+            String::from_utf8(rest.to_vec()).unwrap()
+        );
+    }
+
+    #[test]
+    fn capture_repeatable_2() {
+        let (pattern, rest) = Solution::capture_repeatable("abc*d*efg*h*jk".as_bytes());
+
+        assert_eq!(None, pattern);
+
+        assert_eq!(
+            "abc*d*efg*h*jk".to_string(),
+            String::from_utf8(rest.to_vec()).unwrap()
+        );
+    }
+
+    #[test]
+    fn capture_repeatable_3() {
+        let (pattern, rest) = Solution::capture_repeatable("c*d*e*f*g*h*".as_bytes());
+
+        assert_eq!(
+            "c*d*e*f*g*h*".to_string(),
+            pattern
+                .map(|b| String::from_utf8(b.to_vec()).unwrap())
+                .unwrap_or_default()
+        );
+
+        assert_eq!(0, rest.len());
+    }
+
+    #[test]
+    fn parse_regex() {
+        let parsed = Solution::parse_regex("abc*d*efg*h*jk".as_bytes());
+
+        let mut node = &parsed;
+
+        while let Some(n) = node {
+            println!(
+                "Repeatable: {:?} Fixed: {:?}",
+                n.repeatable.map(|b| String::from_utf8(b.to_vec())),
+                n.fixed.map(|b| String::from_utf8(b.to_vec())),
+            );
+            node = &n.next_pattern;
+        }
+    }
+
+    #[test]
+    fn parse_regex_start_repeatable() {
+        let parsed = Solution::parse_regex("c*d*efg*h*jk".as_bytes());
+
+        let mut node = &parsed;
+
+        while let Some(n) = node {
+            println!(
+                "Repeatable: {:?} Fixed: {:?}",
+                n.repeatable.map(|b| String::from_utf8(b.to_vec())),
+                n.fixed.map(|b| String::from_utf8(b.to_vec())),
+            );
+            node = &n.next_pattern;
+        }
+    }
+
+    #[test]
+    fn parse_regex_start_fixed_only() {
+        let parsed = Solution::parse_regex("cdefghjk".as_bytes());
+
+        let mut node = &parsed;
+
+        while let Some(n) = node {
+            println!(
+                "Repeatable: {:?} Fixed: {:?}",
+                n.repeatable.map(|b| String::from_utf8(b.to_vec())),
+                n.fixed.map(|b| String::from_utf8(b.to_vec())),
+            );
+            node = &n.next_pattern;
+        }
+    }
+
+    #[test]
+    fn parse_regex_start_repeatable_only() {
+        let parsed = Solution::parse_regex("c*d*e*f*g*h*j*k*".as_bytes());
+
+        let mut node = &parsed;
+
+        while let Some(n) = node {
+            println!(
+                "Repeatable: {:?} Fixed: {:?}",
+                n.repeatable.map(|b| String::from_utf8(b.to_vec())),
+                n.fixed.map(|b| String::from_utf8(b.to_vec())),
+            );
+            node = &n.next_pattern;
+        }
+    }
 
     #[test]
     fn case001() {
