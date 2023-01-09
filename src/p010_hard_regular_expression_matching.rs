@@ -1,26 +1,28 @@
+#[allow(dead_code)]
+
 pub struct Solution;
 
 impl Solution {
     pub fn is_match(s: String, p: String) -> bool {
-        let first_pattern = Self::next_pattern(p.as_str());
-        return Self::match_recursive(s.as_str(), first_pattern);
+        let first_pattern = Self::next_pattern(p.as_bytes());
+        return Self::match_recursive(s.as_bytes(), first_pattern);
     }
 
-    fn match_recursive<'a>(s: &str, p: Option<Pattern<'a>>) -> bool {
+    fn match_recursive<'a>(s: &[u8], p: Option<Pattern<'a>>) -> bool {
         if let Some(pattern) = p {
-            let next_char = s.chars().next();
+            let next_char = s.iter().next();
 
             if pattern.allow_multiple {
                 let maybe_next_pattern = Self::next_pattern(pattern.next_regex);
 
                 if let Some(next) = next_char {
-                    if pattern.match_char == '.' || next == pattern.match_char {
-                        if pattern.match_char == '.'
+                    if pattern.match_char == b'.' || *next == pattern.match_char {
+                        if pattern.match_char == b'.'
                             || maybe_next_pattern
                                 .as_ref()
                                 .map(|n| {
                                     n.allow_multiple
-                                        || n.match_char == '.'
+                                        || n.match_char == b'.'
                                         || n.match_char == pattern.match_char
                                 })
                                 .unwrap_or(false)
@@ -42,7 +44,7 @@ impl Solution {
                 }
             } else {
                 if let Some(next) = next_char {
-                    if pattern.match_char == '.' || next == pattern.match_char {
+                    if pattern.match_char == b'.' || *next == pattern.match_char {
                         return Self::match_recursive(
                             &s[1..],
                             Self::next_pattern(pattern.next_regex),
@@ -60,9 +62,9 @@ impl Solution {
     }
 
     #[inline]
-    fn next_pattern<'a>(regex: &'a str) -> Option<Pattern<'a>> {
+    fn next_pattern<'a>(regex: &'a [u8]) -> Option<Pattern<'a>> {
         let mut next_index = 1;
-        let mut chars = regex.chars();
+        let mut chars = regex.iter();
 
         let next_char = chars.next();
         if next_char.is_none() {
@@ -71,13 +73,13 @@ impl Solution {
 
         let match_char = next_char.unwrap();
 
-        let allow_multiple = chars.next().unwrap_or_default() == '*';
+        let allow_multiple = *(chars.next().unwrap_or(&b' ')) == b'*';
         if allow_multiple {
             next_index = next_index + 1;
         }
 
         Some(Pattern {
-            match_char,
+            match_char: *match_char,
             allow_multiple,
             next_regex: &regex[next_index..],
         })
@@ -86,9 +88,9 @@ impl Solution {
 
 #[derive(Debug)]
 pub struct Pattern<'a> {
-    pub match_char: char,
+    pub match_char: u8,
     pub allow_multiple: bool,
-    pub next_regex: &'a str,
+    pub next_regex: &'a [u8],
 }
 
 #[cfg(test)]
