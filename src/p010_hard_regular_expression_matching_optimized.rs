@@ -3,6 +3,13 @@ pub struct Solution;
 #[allow(dead_code)]
 impl Solution {
     pub fn is_match(s: String, p: String) -> bool {
+        let input = s.as_bytes();
+        let pattern = Self::parse_regex(input);
+
+        return Self::match_recursive(input, pattern);
+    }
+
+    pub fn match_recursive(input: &[u8], pattern: Option<Box<PatternPair>>) -> bool {
         false
     }
 
@@ -64,6 +71,32 @@ impl Solution {
         }
 
         return (Some(&regex), &regex[regex.len()..]);
+    }
+
+    pub fn index_of(input: &[u8], pattern: &[u8]) -> Option<usize> {
+        assert_ne!(pattern.len(), 0);
+
+        if input.len() == 0 {
+            return None;
+        }
+
+        'outer: for i in 0..input.len() {
+            if input[i] == pattern[0] {
+                for k in 1..pattern.len() {
+                    if let Some(k_input) = input.get(i + k) {
+                        if *k_input != pattern[k] {
+                            continue 'outer;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                return Some(i);
+            }
+        }
+
+        None
     }
 }
 
@@ -227,6 +260,38 @@ mod test {
             );
             node = &n.next_pattern;
         }
+    }
+
+    #[test]
+    fn index_of_1() {
+        assert_eq!(
+            Solution::index_of("abcd".as_bytes(), "bc".as_bytes()),
+            Some(1)
+        );
+    }
+
+    #[test]
+    fn index_of_2() {
+        assert_eq!(
+            Solution::index_of("abdabeabc".as_bytes(), "abc".as_bytes()),
+            Some(6)
+        );
+    }
+
+    #[test]
+    fn index_of_3() {
+        assert_eq!(
+            Solution::index_of("abc".as_bytes(), "abc".as_bytes()),
+            Some(0)
+        );
+    }
+
+    #[test]
+    fn index_of_4() {
+        assert_eq!(
+            Solution::index_of("abc".as_bytes(), "abcdef".as_bytes()),
+            Some(0)
+        );
     }
 
     #[test]
