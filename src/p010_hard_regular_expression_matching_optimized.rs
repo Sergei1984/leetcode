@@ -22,13 +22,18 @@ impl Solution {
 
         if let Some(p) = pattern {
             if let Some(fixed) = p.fixed {
+                if fixed.len() > input.len() {
+                    return false;
+                }
                 if let Some(repeatable) = p.repeatable {
                     let mut fixed_match_index = 0;
 
                     while let Some(idx) = Self::index_of_pattern(input, fixed, fixed_match_index) {
                         let repeatable_part = &input[0..idx];
 
-                        if Self::match_repeatable(repeatable_part, repeatable) {
+                        if input.len() >= idx + fixed.len()
+                            && Self::match_repeatable(repeatable_part, repeatable)
+                        {
                             let rest_matches = Self::match_recursive(
                                 &input[idx + fixed.len()..],
                                 p.next_pattern.clone(),
@@ -654,5 +659,20 @@ mod test {
     fn case030_zero_or_more_at_the_end() {
         let result = Solution::is_match("a".to_string(), "ab*".to_string());
         assert_eq!(result, true);
+    }
+
+    #[test]
+    fn case031_leetcode_test() {
+        let result = Solution::is_match("a".to_string(), ".*..a*".to_string());
+        assert_eq!(result, false);
+    }
+
+    #[test]
+    fn case032_leetcode_test() {
+        let result = Solution::is_match(
+            "bccbbabcaccacbcacaa".to_string(),
+            ".*b.*c*.*.*.c*a*.c".to_string(),
+        );
+        assert_eq!(result, false);
     }
 }
