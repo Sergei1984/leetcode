@@ -77,3 +77,8 @@ equal to i32.MAX \* 10 (which wouldn't work and causes overflow).
 
 Work around that by checking actual overflow and testing number with if,
 because there are two possible first digits (1 or 2) for near end numbers.
+
+## Problem 12. Integer to Roman (Medium)
+
+Pretty straightforward but requires decent amount of code.
+Seems convenient algorithm - split to 10-power bases and convert using given set of rules.
