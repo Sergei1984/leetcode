@@ -7,6 +7,7 @@ mod p007_medium_reverse_integer;
 mod p008_easy_string_to_integer;
 mod p010_hard_regular_expression_matching;
 mod p010_hard_regular_expression_matching_optimized;
+mod p011_medium_container_with_most_water;
 mod p012_medium_integer_to_roman;
 mod p013_easy_roman_to_integer;
 mod p014_easy_longest_common_prefix;
