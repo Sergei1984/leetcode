@@ -82,3 +82,13 @@ because there are two possible first digits (1 or 2) for near end numbers.
 
 Pretty straightforward but requires decent amount of code.
 Seems convenient algorithm - split to 10-power bases and convert using given set of rules.
+
+## Problem 11. Container with most water (Medium)
+
+Simply enough code (and not optimal) but fairly complex algorithm.
+What we do here:
+
+- Build a map of all heights. For each height we store range: most left index and most right index for the height
+- Tricky part: starting from highest we check each bounds: if previous higher range is wider we extend left or right bounds to width of previous.
+  It means if for example most right "wall" has height 10 then all "walls" below 10 will stuck in most right.
+- We got a metrics of maximal rectangle of each possible heigh. Selecting highest is trivial.
