@@ -106,8 +106,8 @@ impl Sudoku {
     }
 
     pub fn find_cell_with_single_value(&self) -> Option<(usize, usize, u8)> {
-        for row in self.rows() {
-            for col in self.cols() {
+        for row in self.spaced_rows() {
+            for col in self.spaced_cols() {
                 if self.field[row][col].is_none() {
                     let possible_digits = self.cell_possible_digits(row, col);
                     if possible_digits.len() == 1 {
@@ -197,6 +197,22 @@ impl Sudoku {
         }
     }
 
+    fn spaced_rows(&self) -> impl Iterator<Item = usize> + '_ {
+        self.row_missing_numbers
+            .iter()
+            .enumerate()
+            .filter(|(i, v)| v.len() > 0)
+            .map(|(i, _)| i)
+    }
+
+    fn spaced_cols(&self) -> impl Iterator<Item = usize> + '_ {
+        self.col_missing_numbers
+            .iter()
+            .enumerate()
+            .filter(|(i, v)| v.len() > 0)
+            .map(|(i, _)| i)
+    }
+
     fn init_missing_num_data(&mut self) {
         let full_digits = HashSet::<u8>::from([1, 2, 3, 4, 5, 6, 7, 8, 9]);
         // rows
@@ -244,6 +260,7 @@ impl Sudoku {
 
     fn cell_possible_digits(&self, row: usize, col: usize) -> HashSet<u8> {
         let missing_rows = &self.row_missing_numbers[row];
+
         let missing_col = &self.col_missing_numbers[col];
 
         let (quad_row, quad_col) = self.quad_coords(row, col);
