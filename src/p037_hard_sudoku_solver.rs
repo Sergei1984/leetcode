@@ -22,7 +22,10 @@ impl Solution {
             println!("==============STEP===============");
             let next_pos = sudoku.find_cell_with_single_value();
             if let Some((row, col, digit)) = next_pos {
-                sudoku.put(row, col, digit);
+                if !sudoku.put(row, col, digit) {
+                    return None;
+                }
+
                 sudoku.print(true);
             } else {
                 break;
