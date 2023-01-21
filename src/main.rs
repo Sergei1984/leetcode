@@ -11,6 +11,7 @@ mod p011_medium_container_with_most_water;
 mod p012_medium_integer_to_roman;
 mod p013_easy_roman_to_integer;
 mod p014_easy_longest_common_prefix;
+mod p037_hard_sudoku_solver;
 
 fn main() {
     println!("Hello, world!");
