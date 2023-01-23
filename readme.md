@@ -92,3 +92,10 @@ What we do here:
 - Tricky part: starting from highest we check each bounds: if previous higher range is wider we extend left or right bounds to width of previous.
   It means if for example most right "wall" has height 10 then all "walls" below 10 will stuck in most right.
 - We got a metrics of maximal rectangle of each possible heigh. Selecting highest is trivial.
+
+## Problem 37. Sudoku solver (Hard)
+
+Code relatively simple but there is decent amount of code to write.
+Also it were pretty good Rust exercise since it is about writing structure with bunch of methods.
+
+Also recursive algorith here as usual, probably not optimal as usually.

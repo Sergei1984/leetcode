@@ -17,32 +17,39 @@ impl Solution {
         }
     }
 
-    fn try_solve(sudoku: &mut Sudoku) -> Option<&Sudoku> {
-        loop {
-            println!("==============STEP===============");
-            let next_pos = sudoku.find_cell_with_single_value();
-            if let Some((row, col, digit)) = next_pos {
-                if !sudoku.put(row, col, digit) {
-                    return None;
-                }
-
-                sudoku.print(true);
-            } else {
-                break;
-            }
-
-            println!("");
+    fn try_solve<'a, 'b>(sudoku: &'a mut Sudoku) -> Option<Box<Sudoku>> {
+        if sudoku.empty_cell_count() == 0 {
+            return Some(Box::new(sudoku.clone()));
         }
 
-        if sudoku.empty_cell_count() == 0 {
-            return Some(sudoku);
+        let next_pos = sudoku.find_cell_with_single_value();
+        if let Some((row, col, digit)) = next_pos {
+            if !sudoku.put(row, col, digit) {
+                return None;
+            }
+
+            return Self::try_solve(sudoku);
+        } else {
+            if let Some((row, col, digits)) = sudoku.find_cell_with_fewer_multiple_values() {
+                for digit in digits {
+                    let mut copy = sudoku.clone();
+                    if copy.put(row, col, digit) {
+                        let result = Self::try_solve(&mut copy);
+                        if result.is_some() {
+                            return result;
+                        }
+                    }
+                }
+            } else {
+                return None;
+            }
         }
 
         None
     }
 }
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 struct Sudoku {
     field: [[Option<u8>; 9]; 9],
     empty_cell_count: u8,
@@ -119,6 +126,52 @@ impl Sudoku {
                 }
             }
         }
+        None
+    }
+
+    pub fn find_cell_with_fewer_multiple_values(&self) -> Option<(usize, usize, HashSet<u8>)> {
+        let mut min_missing_row_cnt = 9;
+        let mut result_row = None;
+        let mut row_missing_numers = None;
+
+        for row in self.spaced_rows() {
+            let cnt = self.row_missing_numbers[row].len();
+            if cnt < min_missing_row_cnt {
+                min_missing_row_cnt = cnt;
+                result_row = Some(row);
+                row_missing_numers = Some(&self.row_missing_numbers[row]);
+            }
+        }
+
+        let mut col_missing_numbers = None;
+        let mut min_missing_col_cnt = 9;
+        let mut result_col = None;
+
+        for col in self.spaced_cols() {
+            if self.field[result_row.unwrap()][col].is_some() {
+                continue;
+            }
+
+            let cnt = self.col_missing_numbers[col].len();
+            if cnt < min_missing_col_cnt {
+                min_missing_col_cnt = cnt;
+                result_col = Some(col);
+                col_missing_numbers = Some(&self.col_missing_numbers[col]);
+            }
+        }
+
+        if let Some(row) = result_row {
+            if let Some(col) = result_col {
+                let digits: HashSet<u8> = row_missing_numers
+                    .unwrap()
+                    .intersection(col_missing_numbers.unwrap())
+                    .map(|a| *a)
+                    .collect();
+
+                return Some((row, col, digits));
+            }
+        }
+
         None
     }
 
