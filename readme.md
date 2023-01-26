@@ -99,3 +99,21 @@ Code relatively simple but there is decent amount of code to write.
 Also it were pretty good Rust exercise since it is about writing structure with bunch of methods.
 
 Also recursive algorith here as usual, probably not optimal as usually.
+
+## Problem 48. Rotate image
+
+Basic idea of algorith: split a matrix to a set of nested concentrated squares with common center
+and rotate each square inplace.
+
+The most complexity is rotating square inplace.
+
+Idea is next: we rotate a vertexes of sub-squares.
+So taking top-left cell, put it to top-right, remember value of top-right, put it to bottom-right,
+remember the value, put it to bottom-left and put it's value to top-right finally.
+
+So on each starting point we have four replacements.
+
+Next we take second cell in first row (row: 0, col: 1) and repeat it.
+
+We should do x replacement, where x = width_of_square - 1.
+After that we have our square (I called it level) rotated.

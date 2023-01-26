@@ -1,24 +1,36 @@
 #![allow(unused)]
 
+use std::slice::Windows;
+
 pub struct Solution;
 
 impl Solution {
     pub fn rotate(matrix: &mut Vec<Vec<i32>>) {
+        if matrix.len() == 1 {
+            return;
+        }
+
         for level in 0..matrix.len() / 2 {
             let width = matrix.len() - level * 2;
-            let perimeter_len = width * 2 + (width - 2) * 2;
 
-            let cells_to_rotate = perimeter_len - width - 1;
+            for sqr_start_col in 0..width - 1 {
+                let mut rotating_value = matrix[level][sqr_start_col + level];
 
-            let origin = (level, level);
+                let mut pos_row = level;
+                let mut pos_col = sqr_start_col + level;
 
-            println!("R{}", level);
+                for _ in 0..4 {
+                    let next_row = pos_col;
+                    let next_col = matrix.len() - 1 - pos_row;
+
+                    let tmp = matrix[next_row][next_col];
+                    matrix[next_row][next_col] = rotating_value;
+                    rotating_value = tmp;
+                    pos_row = next_row;
+                    pos_col = next_col;
+                }
+            }
         }
-    }
-
-    // moves virtual position
-    fn rotate_to(origin: (usize, usize), position: (usize, usize), width: usize) -> (usize, usize) {
-        todo!()
     }
 }
 
