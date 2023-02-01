@@ -100,7 +100,7 @@ Also it were pretty good Rust exercise since it is about writing structure with 
 
 Also recursive algorith here as usual, probably not optimal as usually.
 
-## Problem 48. Rotate image
+## Problem 48. Rotate image (Medium)
 
 Basic idea of algorith: split a matrix to a set of nested concentrated squares with common center
 and rotate each square inplace.
@@ -117,3 +117,7 @@ Next we take second cell in first row (row: 0, col: 1) and repeat it.
 
 We should do x replacement, where x = width_of_square - 1.
 After that we have our square (I called it level) rotated.
+
+## Problem 88. Merge sorted list (into new array) (Easy)
+
+Pretty easy if we merge starting from the end of lists to avoid overwriting.
