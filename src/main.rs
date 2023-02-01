@@ -1,3 +1,4 @@
+mod algorithms;
 #[allow(dead_code)]
 mod p001_easy_two_sum;
 mod p002_easy_add_two_numbers;
