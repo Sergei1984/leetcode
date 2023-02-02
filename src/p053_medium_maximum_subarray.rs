@@ -8,12 +8,12 @@ impl Solution {
     }
 
     pub fn max_sub_array_linear(array: &[i32]) -> i32 {
-        let mut max_so_far =i32::min_value();
+        let mut max_so_far = i32::min_value();
         let mut max_ending_here = 0;
 
         for i in 0..array.len() {
             max_ending_here += array[i];
-            if max_so_far <max_ending_here {
+            if max_so_far < max_ending_here {
                 max_so_far = max_ending_here;
             }
 
@@ -23,7 +23,6 @@ impl Solution {
         }
 
         max_so_far
-
     }
 
     pub fn max_sub_array_rec(array: &[i32]) -> i32 {
