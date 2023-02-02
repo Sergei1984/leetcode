@@ -8,8 +8,7 @@ impl Solution {
     // [1, 100, 200, 20, 120, 250]
     // [200, 250, 300, 1, 2, 3]
 
-    // [200, 250, 3, 1, 250, 300]
-    // [1, 5, 10, 2, 3, 20]
+    // [1, 5, 19, 17, 18, 20]
     pub fn merge_sorted_parts_into_new(first: &[i32], second: &[i32]) -> Vec<i32> {
         let mut result = Vec::with_capacity(first.len() + second.len());
 

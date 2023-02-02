@@ -14,6 +14,7 @@ mod p013_easy_roman_to_integer;
 mod p014_easy_longest_common_prefix;
 mod p037_hard_sudoku_solver;
 mod p048_medium_rotate_image;
+mod p053_medium_maximum_subarray;
 mod p088_easy_merge_sorted_arrays;
 
 fn main() {

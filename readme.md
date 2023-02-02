@@ -121,3 +121,9 @@ After that we have our square (I called it level) rotated.
 ## Problem 88. Merge sorted list (into new array) (Easy)
 
 Pretty easy if we merge starting from the end of lists to avoid overwriting.
+
+## Problem 53. Maximum subarray (Medium)
+
+For some reason divide-and-conquer algorithm doesn't pass time limit on leetcode.
+Also implemented Kadane's O(n) algorithm which is pretty easy to implement
+but somehow hard to understand (especially convince yourself that it actually worked).
