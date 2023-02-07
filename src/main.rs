@@ -3,6 +3,7 @@ mod algorithms;
 mod p001_easy_two_sum;
 mod p002_easy_add_two_numbers;
 mod p003_easy_longes_unique_substring;
+mod p004_hard_median_of_two_sorted_arrays;
 mod p005_easy_longest_palindromic_substring;
 mod p007_medium_reverse_integer;
 mod p008_easy_string_to_integer;
