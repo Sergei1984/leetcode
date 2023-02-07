@@ -4,7 +4,7 @@ pub struct Solution;
 
 impl Solution {
     pub fn find_median_sorted_arrays(nums1: Vec<i32>, nums2: Vec<i32>) -> f64 {
-        let result = Self::find_median_rec(&nums1[..], &nums2[..], 0, 0);
+        let result = Self::find_median_rec(&nums1, &nums2, 0, 0);
         result
     }
 
@@ -25,24 +25,9 @@ impl Solution {
             smaller = left;
         }
 
-        if bigger.len() == 2 && smaller.len() == 0 {
-            return ((bigger[0] as f64) + (bigger[1] as f64)) / 2.0;
-        }
-
-        if bigger.len() == 1 {
-            if smaller.len() == 0 {
-                return bigger[0] as f64;
-            } else {
-                if extra_smaller == extra_bigger {
-                    return ((bigger[0] as f64) + (smaller[0] as f64)) / 2.0;
-                }
-
-                if extra_smaller > extra_bigger {
-                    return bigger[0].min(smaller[0]) as f64;
-                } else {
-                    return bigger[0].max(smaller[0]) as f64;
-                }
-            }
+        if bigger.len() <= 2 {
+            let combined_array = Self::merge_join(bigger, smaller);
+            return Self::find_median_value(&combined_array, extra_smaller, extra_bigger);
         }
 
         let idx = bigger.len() / 2;
@@ -56,7 +41,18 @@ impl Solution {
             Some(Self::find_index_less_or_equal(smaller, median))
         };
 
-        let other_smaller_cnt = smaller_idx.unwrap_or(0);
+        let smaller_median = smaller_idx.map(|i| smaller[i]);
+
+        let other_smaller_cnt = smaller_idx
+            .zip(smaller_median)
+            .map(|(idx, m)| {
+                if m <= median {
+                    return idx + 1;
+                } else {
+                    return idx;
+                }
+            })
+            .unwrap_or(0);
         let other_bigger_cnt = smaller.len() - other_smaller_cnt;
 
         let b = b_bigger_cnt + extra_bigger + other_bigger_cnt;
@@ -114,6 +110,28 @@ impl Solution {
             }
         }
     }
+
+    pub fn merge_join(v1: &[i32], v2: &[i32]) -> Vec<i32> {
+        let mut result = v1.to_vec();
+        result.extend(v2);
+
+        result.sort();
+
+        result
+    }
+
+    pub fn find_median_value(array: &[i32], extra_small: usize, extra_large: usize) -> f64 {
+        let is_odd = (array.len() + extra_large + extra_small) % 2 == 1;
+
+        let middle = (array.len() + extra_large + extra_small) / 2;
+        let middle_index = middle - extra_small;
+
+        if is_odd {
+            return array[middle_index] as f64;
+        } else {
+            return ((array[middle_index - 1] + array[middle_index]) as f64) / 2.;
+        }
+    }
 }
 
 mod test {
@@ -141,6 +159,14 @@ mod test {
     }
 
     #[test]
+    fn case_004() {
+        assert_eq!(
+            Solution::find_median_sorted_arrays(vec![1], vec![2, 3, 4]),
+            2.5
+        );
+    }
+
+    #[test]
     fn find_index_001() {
         assert_eq!(Solution::find_index_less_or_equal(&vec![1, 2, 3][..], 0), 0);
     }
@@ -153,5 +179,10 @@ mod test {
     #[test]
     fn find_index_003() {
         assert_eq!(Solution::find_index_less_or_equal(&vec![1][..], 3), 0);
+    }
+
+    #[test]
+    fn find_median_value_001() {
+        assert_eq!(Solution::find_median_value(&vec![1, 2, 3, 4], 0, 0), 2.5);
     }
 }

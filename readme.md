@@ -127,3 +127,8 @@ Pretty easy if we merge starting from the end of lists to avoid overwriting.
 For some reason divide-and-conquer algorithm doesn't pass time limit on leetcode.
 Also implemented Kadane's O(n) algorithm which is pretty easy to implement
 but somehow hard to understand (especially convince yourself that it actually worked).
+
+## Problem 4. Median of two sorted arrays (Hard)
+
+Fucking really hard.
+Since inventing algorithm till implementation because of LOT of corner cases.
