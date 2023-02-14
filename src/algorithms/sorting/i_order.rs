@@ -6,10 +6,8 @@ impl Solution {
     pub fn sort(input: &mut Vec<i32>) {}
 
     // Distribute slice elements around n-th element, so left side would contain smaller elements and right side would contain larger
-    pub fn partition<T: PartialOrd>(input: &mut [T], n: usize) -> Option<usize> {
-        if input.len() == 0 {
-            return None;
-        }
+    pub fn partition<T: PartialOrd>(input: &mut [T], n: usize) -> usize {
+        assert!(input.len() > 0);
 
         input.swap(n, input.len() - 1);
 
@@ -26,7 +24,7 @@ impl Solution {
 
         input.swap(last_idx, lower_larger_idx);
 
-        Some(lower_larger_idx)
+        lower_larger_idx
     }
 }
 
@@ -45,7 +43,7 @@ mod test {
         println!("Pivot is {}", pivot_val);
         println!("{:?}", arr);
 
-        assert_eq!(Some(5), idx);
+        assert_eq!(5, idx);
     }
 
     #[test]
@@ -59,7 +57,7 @@ mod test {
         println!("Pivot is {}", pivot_val);
         println!("{:?}", arr);
 
-        assert_eq!(Some(0), idx);
+        assert_eq!(0, idx);
     }
 
     #[test]
@@ -73,6 +71,6 @@ mod test {
         println!("Pivot is {}", pivot_val);
         println!("{:?}", arr);
 
-        assert_eq!(Some(6), idx);
+        assert_eq!(6, idx);
     }
 }
