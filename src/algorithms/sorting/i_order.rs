@@ -6,7 +6,11 @@ impl Solution {
     pub fn sort(input: &mut Vec<i32>) {}
 
     // Distribute slice elements around n-th element, so left side would contain smaller elements and right side would contain larger
-    pub fn partition<T: PartialOrd>(input: &mut [T], n: usize) -> usize {
+    pub fn partition<T: PartialOrd>(input: &mut [T], n: usize) -> Option<usize> {
+        if input.len() == 0 {
+            return None;
+        }
+
         input.swap(n, input.len() - 1);
 
         let last_idx = input.len() - 1;
@@ -22,7 +26,7 @@ impl Solution {
 
         input.swap(last_idx, lower_larger_idx);
 
-        lower_larger_idx
+        Some(lower_larger_idx)
     }
 }
 
@@ -36,9 +40,39 @@ mod test {
         let pivot_idx = 6;
         let pivot_val = arr[pivot_idx];
 
-        Solution::partition(&mut arr, pivot_idx);
+        let idx = Solution::partition(&mut arr, pivot_idx);
 
         println!("Pivot is {}", pivot_val);
         println!("{:?}", arr);
+
+        assert_eq!(Some(5), idx);
+    }
+
+    #[test]
+    fn partition_002() {
+        let mut arr = vec![21, 1, 5, 12, 77, 9, 22];
+        let pivot_idx = 1;
+        let pivot_val = arr[pivot_idx];
+
+        let idx = Solution::partition(&mut arr, pivot_idx);
+
+        println!("Pivot is {}", pivot_val);
+        println!("{:?}", arr);
+
+        assert_eq!(Some(0), idx);
+    }
+
+    #[test]
+    fn partition_003() {
+        let mut arr = vec![21, 1, 5, 12, 77, 9, 22];
+        let pivot_idx = 4;
+        let pivot_val = arr[pivot_idx];
+
+        let idx = Solution::partition(&mut arr, pivot_idx);
+
+        println!("Pivot is {}", pivot_val);
+        println!("{:?}", arr);
+
+        assert_eq!(Some(6), idx);
     }
 }
