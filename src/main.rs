@@ -7,6 +7,7 @@ mod p004_hard_median_of_two_sorted_arrays;
 mod p005_easy_longest_palindromic_substring;
 mod p007_medium_reverse_integer;
 mod p008_easy_string_to_integer;
+mod p009_easy_palindrome_number;
 mod p010_hard_regular_expression_matching;
 mod p010_hard_regular_expression_matching_optimized;
 mod p011_medium_container_with_most_water;

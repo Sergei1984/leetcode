@@ -132,3 +132,7 @@ but somehow hard to understand (especially convince yourself that it actually wo
 
 Fucking really hard.
 Since inventing algorithm till implementation because of LOT of corner cases.
+
+## Problem 9. Palindrome number (Easy)
+
+Pretty straightforward algorithm, need to compute indexes carefully!
