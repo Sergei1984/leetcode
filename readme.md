@@ -136,3 +136,7 @@ Since inventing algorithm till implementation because of LOT of corner cases.
 ## Problem 9. Palindrome number (Easy)
 
 Pretty straightforward algorithm, need to compute indexes carefully!
+
+## Problem 15. 3Sum (Medium)
+
+Pretty easy algorithmically but harder when needs an optimal algorithm.
