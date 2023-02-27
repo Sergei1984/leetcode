@@ -140,3 +140,8 @@ Pretty straightforward algorithm, need to compute indexes carefully!
 ## Problem 15. 3Sum (Medium)
 
 Pretty easy algorithmically but harder when needs an optimal algorithm.
+
+## Problem 16. Zigzag conversion (Medium)
+
+No so hard if allowed to create "field" in memory and fill it with chars.
+As usual a tons of zero ariphmetics and bounds errors and mistypes.
