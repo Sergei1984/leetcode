@@ -15,6 +15,7 @@ mod p012_medium_integer_to_roman;
 mod p013_easy_roman_to_integer;
 mod p014_easy_longest_common_prefix;
 mod p015_medium_3sum;
+mod p016_medium_3sum_closest;
 mod p016_medium_zigzag_conversion;
 mod p037_hard_sudoku_solver;
 mod p048_medium_rotate_image;
